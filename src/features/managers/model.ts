@@ -14,20 +14,22 @@ import { hashPassword } from "@/utils/common/password";
 
 const adminRef = collection(db, COLLECTIONS.ADMIN);
 
-
 export const findAdminByEmail = async (email: string): Promise<IAdminDb> => {
   const existedAdmin = await getDocs(
     query(adminRef, where("email", "==", email))
   );
 
+  if (!existedAdmin.docs[0]) {
+    throw Error("Email is not exist!");
+  }
+
   const admin = existedAdmin.docs[0].data() as IAdminDb;
-  
+
   return {
     ...admin,
     id: existedAdmin.docs[0].id,
   };
 };
-
 
 export const createAdmin = async (data: ICreateAdminInput) => {
   const existedAdmin = await findAdminByEmail(data.email);
