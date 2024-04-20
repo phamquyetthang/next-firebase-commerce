@@ -1,12 +1,9 @@
-export interface IAdminDb {
-  id: string;
+import { IDocDb } from "../type";
+
+export interface ICreateAdminInput {
   email: string;
   password: string;
   isActive: boolean;
-  deleted_at: string;
-  created_at: string;
-  updated_at: string;
 }
 
-export interface ICreateAdminInput
-  extends Pick<IAdminDb, "email" | "password"> {}
+export interface IAdminDb extends ICreateAdminInput, IDocDb {}
