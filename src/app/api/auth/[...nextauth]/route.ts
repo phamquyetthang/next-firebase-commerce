@@ -27,6 +27,9 @@ export const adminLogin = async (email: string, password: string) => {
   };
 };
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt',
+  },
   providers: [
     CredentialsProvider({
       credentials: {},
