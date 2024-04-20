@@ -8,27 +8,39 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ICreateAdminInput } from "@/features/managers/type";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
+import {  useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function AdminLoginForm() {
   const router = useRouter();
 
-  const [data, setData] = useState<ICreateAdminInput>({
-    email: "",
-    password: "",
+  const form = useForm<ICreateAdminInput>({
+    mode: "onBlur",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setData((pre) => ({ ...pre, [e.target.name]: e.target.value }));
-  };
-  const onLogin = async (e: FormEvent) => {
-    e.preventDefault();
+  const {
+    control,
+    handleSubmit,
+    formState: { isValid, errors },
+  } = form;
+
+  const onLogin = async (data: ICreateAdminInput) => {
     try {
       const res = await signIn("credentials", {
         email: data.email,
@@ -47,46 +59,65 @@ export default function AdminLoginForm() {
   };
   return (
     <div className="flex flex-1 justify-center items-center content-center h-screen">
-      <form onSubmit={onLogin}>
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle className="text-2xl">Admin Login</CardTitle>
-            <CardDescription>
-              Enter your email below to login to your account.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onLogin)}>
+          <Card className="w-full max-w-sm">
+            <CardHeader>
+              <CardTitle className="text-2xl">Admin Login</CardTitle>
+              <CardDescription>
+                Enter your email below to login to your account.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <FormField
+                control={control}
                 name="email"
-                placeholder="m@example.com"
-                required
-                value={data.email}
-                onChange={onChange}
+                rules={{
+                  required: { value: true, message: "Email is required" },
+                  pattern: {
+                    value: /^\S+@\S+\.\S+$/,
+                    message: "Email is invalid",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="m@example.com" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
+
+              <FormField
+                control={control}
                 name="password"
-                type="password"
-                required
-                value={data.password}
-                onChange={onChange}
+                rules={{
+                  required: { value: true, message: "Password is required!" },
+                  minLength: { value: 3, message: "Password is short" },
+                }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="******" {...field} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full" type="submit">
-              Sign in
-            </Button>
-          </CardFooter>
-        </Card>
-      </form>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full" type="submit" disabled={!isValid}>
+                Sign in
+              </Button>
+            </CardFooter>
+          </Card>
+        </form>
+      </Form>
     </div>
   );
 }
