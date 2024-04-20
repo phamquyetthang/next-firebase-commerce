@@ -1,5 +1,4 @@
-import React, { Suspense } from "react";
-import CategoryTable from "./table";
+import React from "react";
 import {
   Card,
   CardContent,
@@ -10,11 +9,9 @@ import {
 } from "@/components/ui/card";
 import TableHeader from "./table-header";
 import TablePagination from "./table-pagination";
-import { getCategories } from "@/features/categories/model";
 import TableLoading from "./table-loading";
 
 const Category = async () => {
-  const data = await getCategories();
   return (
     <div>
       <TableHeader />
@@ -24,9 +21,7 @@ const Category = async () => {
           <CardDescription>Manage your Categories .</CardDescription>
         </CardHeader>
         <CardContent>
-          <Suspense fallback={<TableLoading />}>
-            <CategoryTable data={data} />
-          </Suspense>
+          <TableLoading />
         </CardContent>
         <CardFooter className="flex justify-between">
           <div className="text-xs text-muted-foreground">
