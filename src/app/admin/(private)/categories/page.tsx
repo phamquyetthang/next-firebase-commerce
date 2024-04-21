@@ -13,8 +13,13 @@ import TablePagination from "./table-pagination";
 import { getCategories } from "@/features/categories/model";
 import TableLoading from "./table-loading";
 
-const Category = async () => {
-  const data = await getCategories();
+interface IProps {
+  searchParams: {
+    keyword: string;
+  };
+}
+const Category = async ({ searchParams }: IProps) => {
+  const data = await getCategories({ keyword: searchParams.keyword });
   return (
     <div>
       <TableHeader />
@@ -24,7 +29,7 @@ const Category = async () => {
           <CardDescription>Manage your Categories .</CardDescription>
         </CardHeader>
         <CardContent>
-          <Suspense fallback={<TableLoading />}>
+          <Suspense fallback={<TableLoading />} key={searchParams.keyword}>
             <CategoryTable data={data} />
           </Suspense>
         </CardContent>

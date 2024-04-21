@@ -1,13 +1,21 @@
 import {
   addDoc,
   collection,
+  endAt,
   getDoc,
   getDocs,
+  orderBy,
   query,
+  startAt,
   Timestamp,
   where,
 } from "firebase/firestore";
-import { ICategoryDb, ICategoryDoc, ICreateCategoryInput } from "./type";
+import {
+  ICategoryDb,
+  ICategoryDoc,
+  ICreateCategoryInput,
+  IGetCategoryInput,
+} from "./type";
 import { db } from "@/utils/firebase";
 import { COLLECTIONS } from "@/constants/common";
 import { AddCategorySchema } from "./rules";
@@ -55,8 +63,18 @@ export const addCategory = async (
   return { id: newCategory.id, ...(newCategory.data() as ICategoryDoc) };
 };
 
-export const getCategories = async (): Promise<ICategoryDb[]> => {
-  const categoriesDocsRef = await getDocs(query(categoriesRef));
+export const getCategories = async (
+  data?: IGetCategoryInput
+): Promise<ICategoryDb[]> => {
+  const keyword = data?.keyword || '';
+  const categoriesDocsRef = await getDocs(
+    query(
+      categoriesRef,
+      orderBy("name"),
+      startAt(keyword),
+      endAt(keyword + "\uf8ff")
+    )
+  );
 
   const categories = categoriesDocsRef.docs.map((d) => ({
     ...(d.data() as ICategoryDoc),
