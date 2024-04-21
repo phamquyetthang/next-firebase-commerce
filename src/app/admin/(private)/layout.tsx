@@ -1,5 +1,4 @@
 import { Toaster } from "@/components/ui/sonner";
-import Image from "next/image";
 import Link from "next/link";
 
 import {
@@ -9,6 +8,7 @@ import {
   PanelLeft,
   Search,
   Settings,
+  User,
   Users,
 } from "lucide-react";
 
@@ -34,6 +34,7 @@ import {
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
+import Logout from "@/components/common/logout";
 
 export const ADMIN_PAGES = [
   {
@@ -149,22 +150,18 @@ export default async function RootLayout({
                 size="icon"
                 className="overflow-hidden rounded-full"
               >
-                <Image
-                  src="/placeholder-user.jpg"
-                  width={36}
-                  height={36}
-                  alt="Avatar"
-                  className="overflow-hidden rounded-full"
-                />
+                <User className="w-6 h-6" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>{session.user.email}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Logout />
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
