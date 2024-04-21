@@ -10,3 +10,10 @@ export interface IDocDb {
     nanoseconds: number;
   };
 }
+
+export interface IPaginationRes<T> {
+  meta: {
+    total: number;
+  };
+  data: Array<T>;
+}

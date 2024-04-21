@@ -14,4 +14,6 @@ export interface ICategoryDoc
 
 export interface IGetCategoryInput{
   keyword: string;
+  page: number;
+  size?: number;
 }

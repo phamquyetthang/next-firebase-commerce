@@ -12,14 +12,16 @@ import TableHeader from "./table-header";
 import TablePagination from "./table-pagination";
 import { getCategories } from "@/features/categories/model";
 import TableLoading from "./table-loading";
+import { IGetCategoryInput } from "@/features/categories/type";
 
 interface IProps {
-  searchParams: {
-    keyword: string;
-  };
+  searchParams: IGetCategoryInput;
 }
 const Category = async ({ searchParams }: IProps) => {
-  const data = await getCategories({ keyword: searchParams.keyword });
+  const res = await getCategories({
+    keyword: searchParams.keyword,
+    page: searchParams.page,
+  });
   return (
     <div>
       <TableHeader />
@@ -30,14 +32,14 @@ const Category = async ({ searchParams }: IProps) => {
         </CardHeader>
         <CardContent>
           <Suspense fallback={<TableLoading />} key={searchParams.keyword}>
-            <CategoryTable data={data} />
+            <CategoryTable data={res.data} />
           </Suspense>
         </CardContent>
         <CardFooter className="flex justify-between">
           <div className="text-xs text-muted-foreground">
-            Showing <strong>1-10</strong> of <strong>32</strong> categories
+            <strong>{res.meta.total}</strong> categories
           </div>
-          <TablePagination />
+          <TablePagination total={res.meta.total} />
         </CardFooter>
       </Card>
     </div>
