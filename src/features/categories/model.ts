@@ -21,7 +21,7 @@ export const getCategoryBySlug = async (slug: string) => {
   );
 
   if (!existedCategory.docs[0]) {
-    throw Error("Category is not exist!");
+    return undefined;
   }
 
   const category = existedCategory.docs[0].data() as ICategoryDoc;
@@ -59,7 +59,7 @@ export const getCategories = async (): Promise<ICategoryDb[]> => {
   const categoriesDocsRef = await getDocs(query(categoriesRef));
 
   const categories = categoriesDocsRef.docs.map((d) => ({
-    ...d.data() as ICategoryDoc,
+    ...(d.data() as ICategoryDoc),
     id: d.id,
   }));
 

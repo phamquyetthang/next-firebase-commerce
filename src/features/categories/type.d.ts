@@ -4,7 +4,7 @@ export interface ICreateCategoryInput {
   name: string;
   slug: string;
   description: string; // html
-  images: string[]; // url to storage firebase
+  images?: string[]; // url to storage firebase
 }
 
 export interface ICategoryDb extends ICreateCategoryInput, IDocDb {}
