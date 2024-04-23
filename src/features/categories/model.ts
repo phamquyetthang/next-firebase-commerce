@@ -71,19 +71,24 @@ export const addCategory = async (
 export const getCategories = async (
   data: IGetCategoryInput
 ): Promise<IPaginationRes<ICategoryDb>> => {
-  const { keyword, page, size } = data;
+  const { keyword, page, size, orderField, orderType } = data;
   const queries = [];
+  queries.push(orderBy(orderField, orderType));
+  const queriesKeyword = [];
+  if (keyword) {
+    const keywordQueries = [
+      orderBy("name"),
+      startAt(keyword),
+      endAt(keyword + "\uf8ff"),
+    ];
+    queriesKeyword.push(...keywordQueries);
+    queries.push(...keywordQueries);
+  }
 
-  const queriesKeyword =[ orderBy("name"), startAt(keyword), endAt(keyword + "\uf8ff")]
-  queries.push(...queriesKeyword);
-
-  // 1, 2,3, 4, ...., 10
-  // size 3
-  // page 2
 
   if (page > 1) {
     const lastDoc = await getLastVisibleDoc(
-      categoriesRef,
+      query(categoriesRef, ...queries),
       page,
       Number(size || 5)
     );
@@ -99,7 +104,9 @@ export const getCategories = async (
     id: d.id,
   }));
 
-  const total = await getCountFromServer(query(categoriesRef, ...queriesKeyword));
+  const total = await getCountFromServer(
+    query(categoriesRef, ...queriesKeyword)
+  );
 
   return { meta: { total: total.data().count }, data: categories };
 };

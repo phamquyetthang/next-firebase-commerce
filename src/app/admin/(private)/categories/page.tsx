@@ -19,8 +19,10 @@ interface IProps {
 }
 const Category = async ({ searchParams }: IProps) => {
   const res = await getCategories({
-    keyword: searchParams.keyword,
+    keyword: searchParams.keyword || "",
     page: searchParams.page,
+    orderField: searchParams.orderField || "name",
+    orderType: searchParams.orderType || "desc",
   });
   return (
     <div>
