@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ICategoryDb } from "@/features/categories/type";
 import { Pencil } from "lucide-react";
 import React from "react";
 import moment from "moment";
@@ -14,11 +13,12 @@ import Link from "next/link";
 import TableDeleteAction from "./table-delete-action";
 import { deleteCategoryById } from "@/features/categories/model";
 import { revalidatePath } from "next/cache";
+import { IAdminDb } from "@/features/managers/type";
 
 interface IProps {
-  data: ICategoryDb[];
+  data: IAdminDb[];
 }
-const CategoryTable = ({ data }: IProps) => {
+const ManagersTable = ({ data }: IProps) => {
   const onDelete = async (id: string) => {
     "use server";
     await deleteCategoryById(id);
@@ -28,31 +28,30 @@ const CategoryTable = ({ data }: IProps) => {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Slug</TableHead>
+          <TableHead>Email</TableHead>
           <TableHead>Created at</TableHead>
           <TableHead>Edited At</TableHead>
           <TableHead className="w-28">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((category) => (
-          <TableRow key={category.id}>
-            <TableCell className="font-medium">{category.name}</TableCell>
-            <TableCell>{category.slug}</TableCell>
+        {data.map((admin) => (
+          <TableRow key={admin.id}>
+            <TableCell className="font-medium">{admin.email}</TableCell>
             <TableCell>
-              {moment.unix(category.created_at.seconds).calendar()}
+              {moment.unix(admin.created_at.seconds).calendar()}
             </TableCell>
             <TableCell>
-              {moment.unix(category.updated_at.seconds).calendar()}
+              {moment.unix(admin.updated_at.seconds).calendar()}
             </TableCell>
+
             <TableCell>
               <div className="flex gap-4">
-                <Link href={"/admin/categories/edit/" + category.id}>
+                <Link href={"/admin/categories/edit/" + admin.id}>
                   <Pencil className="w-5 h-5" />
                 </Link>
                 <TableDeleteAction
-                  id={category.id}
+                  id={admin.id}
                   deleteCategoryById={onDelete}
                 />
               </div>
@@ -64,4 +63,4 @@ const CategoryTable = ({ data }: IProps) => {
   );
 };
 
-export default CategoryTable;
+export default ManagersTable;

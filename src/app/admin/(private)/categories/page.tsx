@@ -8,14 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import TableHeader from "./table-header";
-import TablePagination from "./table-pagination";
 import { getCategories } from "@/features/categories/model";
-import TableLoading from "./table-loading";
-import { IGetCategoryInput } from "@/features/categories/type";
+import { IGetDataInput } from "@/features/type";
+import TableHeader from "@/components/common/table-header";
+import TableLoading from "@/components/common/table-loading";
+import TablePagination from "@/components/common/table-pagination";
 
 interface IProps {
-  searchParams: IGetCategoryInput;
+  searchParams: IGetDataInput;
 }
 const Category = async ({ searchParams }: IProps) => {
   const res = await getCategories({
@@ -26,7 +26,7 @@ const Category = async ({ searchParams }: IProps) => {
   });
   return (
     <div>
-      <TableHeader />
+      <TableHeader addTitle="Add Category" />
       <Card x-chunk="dashboard-06-chunk-0">
         <CardHeader>
           <CardTitle>Categories</CardTitle>

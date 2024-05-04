@@ -17,17 +17,13 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import {
-  ICategoryDb,
-  ICategoryDoc,
-  ICreateCategoryInput,
-  IGetCategoryInput,
-} from "./type";
+import { ICategoryDb, ICategoryDoc, ICreateCategoryInput } from "./type";
 import { db } from "@/utils/firebase";
 import { COLLECTIONS } from "@/constants/common";
 import { AddCategorySchema } from "./rules";
 import { formatZodMessage } from "@/utils/common/zod-message";
-import { IPaginationRes } from "../type";
+import { IGetDataInput, IPaginationRes } from "../type";
+import { getLastVisibleDoc } from "@/utils/common/queries";
 
 const categoriesRef = collection(db, COLLECTIONS.CATEGORY);
 
@@ -116,19 +112,24 @@ export const getCategoryById = async (id: string) => {
 };
 
 export const getCategories = async (
-  data: IGetCategoryInput
+  data: IGetDataInput
 ): Promise<IPaginationRes<ICategoryDb>> => {
   const { keyword, page, size, orderField, orderType } = data;
   const queries = [];
   queries.push(orderBy(orderField, orderType));
   const queriesKeyword = [];
   if (keyword) {
-    const keywordQueries = [
-      orderBy("name"),
-      startAt(keyword),
-      endAt(keyword + "\uf8ff"),
-    ];
-    queriesKeyword.push(...keywordQueries);
+    const keywordQueries =
+      orderType === "asc"
+        ? [startAt(keyword), endAt(keyword + "\uf8ff")]
+        : [startAt(keyword + "\uf8ff"), endAt(keyword)];
+    if (orderField !== "name") {
+      keywordQueries.unshift(orderBy("name") as any);
+    }
+
+    queriesKeyword.push(
+      ...[orderBy("name"), startAt(keyword), endAt(keyword + "\uf8ff")]
+    );
     queries.push(...keywordQueries);
   }
 
@@ -155,16 +156,6 @@ export const getCategories = async (
   );
 
   return { meta: { total: total.data().count }, data: categories };
-};
-
-const getLastVisibleDoc = async (
-  queryRef: Query,
-  page: number,
-  size: number
-) => {
-  const docFormStart = await getDocs(query(queryRef, limit((page - 1) * size)));
-  const lastDoc = docFormStart.docs[docFormStart.docs.length - 1];
-  return lastDoc;
 };
 
 export const deleteCategoryById = (id: string) => {

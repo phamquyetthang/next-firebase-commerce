@@ -11,7 +11,10 @@ import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
-const OrderData = () => {
+export interface IOrderProps {
+  options?: string[];
+}
+const OrderData = ({ options }: IOrderProps) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -40,6 +43,7 @@ const OrderData = () => {
     replace(`${pathname}?${params.toString()}`);
   };
 
+  const orderOptions = options || ["name", "created_at", "updated_at"];
   return (
     <div className="flex gap-1">
       <Select value={orderField} onValueChange={onChangeOrderField}>
@@ -47,9 +51,11 @@ const OrderData = () => {
           <SelectValue placeholder="Theme" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="name">Name</SelectItem>
-          <SelectItem value="created_at">Create time</SelectItem>
-          <SelectItem value="updated_at">Update time</SelectItem>
+          {orderOptions.map((option) => (
+            <SelectItem key={option} value={option}>
+              {option.toUpperCase().split("_").join(" ")}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
       <Tabs value={orderType} onValueChange={onChangeOrderType}>

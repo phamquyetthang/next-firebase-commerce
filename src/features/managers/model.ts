@@ -1,16 +1,24 @@
 import {
   addDoc,
   collection,
+  endAt,
+  getCountFromServer,
   getDoc,
   getDocs,
+  limit,
+  orderBy,
   query,
+  startAfter,
+  startAt,
   Timestamp,
   where,
 } from "firebase/firestore";
-import { IAdminDb, ICreateAdminInput } from "./type";
+import { IAdminDb, IAdminDoc, ICreateAdminInput } from "./type";
 import { db } from "@/utils/firebase";
 import { COLLECTIONS } from "@/constants/common";
 import { hashPassword } from "@/utils/common/password";
+import { IGetDataInput, IPaginationRes } from "../type";
+import { getLastVisibleDoc } from "@/utils/common/queries";
 
 const adminRef = collection(db, COLLECTIONS.ADMIN);
 
@@ -49,4 +57,49 @@ export const createAdmin = async (data: ICreateAdminInput) => {
 
   const newAdmin = await getDoc(newAdminRef);
   return { id: newAdmin.id, ...newAdmin.data() };
+};
+
+export const getManagers = async (
+  data: IGetDataInput
+): Promise<IPaginationRes<IAdminDb>> => {
+  const { keyword, page, size, orderField, orderType } = data;
+  const queries = [];
+  queries.push(orderBy(orderField, orderType));
+  const queriesKeyword = [];
+  if (keyword) {
+    const keywordQueries =
+      orderType === "asc"
+        ? [startAt(keyword), endAt(keyword + "\uf8ff")]
+        : [startAt(keyword + "\uf8ff"), endAt(keyword)];
+    if (orderField !== "email") {
+      keywordQueries.unshift(orderBy("email") as any);
+    }
+
+    queriesKeyword.push(
+      ...[orderBy("email"), startAt(keyword), endAt(keyword + "\uf8ff")]
+    );
+    queries.push(...keywordQueries);
+  }
+
+  if (page > 1) {
+    const lastDoc = await getLastVisibleDoc(
+      query(adminRef, ...queries),
+      page,
+      Number(size || 5)
+    );
+    queries.push(startAfter(lastDoc));
+  }
+
+  const managersDocsRef = await getDocs(
+    query(adminRef, ...queries, limit(size || 5))
+  );
+
+  const managers = managersDocsRef.docs.slice(0, 5).map((d) => ({
+    ...(d.data() as IAdminDoc),
+    id: d.id,
+  }));
+
+  const total = await getCountFromServer(query(adminRef, ...queriesKeyword));
+
+  return { meta: { total: total.data().count }, data: managers };
 };
