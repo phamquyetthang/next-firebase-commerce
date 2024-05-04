@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   endAt,
   getCountFromServer,
@@ -164,4 +165,8 @@ const getLastVisibleDoc = async (
   const docFormStart = await getDocs(query(queryRef, limit((page - 1) * size)));
   const lastDoc = docFormStart.docs[docFormStart.docs.length - 1];
   return lastDoc;
+};
+
+export const deleteCategoryById = (id: string) => {
+  return deleteDoc(doc(categoriesRef, id));
 };

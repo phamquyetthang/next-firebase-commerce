@@ -7,14 +7,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ICategoryDb } from "@/features/categories/type";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil } from "lucide-react";
 import React from "react";
 import moment from "moment";
 import Link from "next/link";
+import TableDeleteAction from "./table-delete-action";
+import { deleteCategoryById } from "@/features/categories/model";
+import { revalidatePath } from "next/cache";
+
 interface IProps {
   data: ICategoryDb[];
 }
 const CategoryTable = ({ data }: IProps) => {
+  const onDelete = async (id: string) => {
+    "use server";
+    await deleteCategoryById(id);
+    revalidatePath("/admin/categories");
+  };
   return (
     <Table>
       <TableHeader>
@@ -38,11 +47,14 @@ const CategoryTable = ({ data }: IProps) => {
               {moment.unix(category.updated_at.seconds).calendar()}
             </TableCell>
             <TableCell>
-              <div className="flex gap-1">
+              <div className="flex gap-4">
                 <Link href={"/admin/categories/edit/" + category.id}>
                   <Pencil className="w-5 h-5" />
                 </Link>
-                <Trash className="w-5 h-5" />
+                <TableDeleteAction
+                  id={category.id}
+                  deleteCategoryById={onDelete}
+                />
               </div>
             </TableCell>
           </TableRow>
