@@ -8,8 +8,9 @@ import React from "react";
 
 interface IProps extends IOrderProps {
   addTitle: string;
+  addPath: string
 }
-const TableHeader = ({ addTitle, options }: IProps) => {
+const TableHeader = ({ addTitle, options, addPath }: IProps) => {
   return (
     <div className="mb-6">
       <div className="flex items-center gap-2">
@@ -19,7 +20,7 @@ const TableHeader = ({ addTitle, options }: IProps) => {
           <Button size="sm" className="h-8 gap-1">
             <PlusCircle className="h-3.5 w-3.5" />
             <Link
-              href={"/admin/categories/new"}
+              href={addPath}
               className="sr-only sm:not-sr-only sm:whitespace-nowrap"
             >
               {addTitle}

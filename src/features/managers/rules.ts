@@ -6,3 +6,5 @@ export const loginSchema = z.object({
     message: "Password must be at least 3 characters.",
   }),
 });
+
+export const addAdminSchema = loginSchema;

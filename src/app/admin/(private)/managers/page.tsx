@@ -28,6 +28,7 @@ const page = async ({ searchParams }: IProps) => {
       <TableHeader
         addTitle="Add Manager"
         options={["email", "created_at", "updated_at"]}
+        addPath="/admin/managers/new"
       />
       <Card x-chunk="dashboard-06-chunk-0">
         <CardHeader>
