@@ -118,3 +118,18 @@ export const updateActiveAdmin = async (id: string, isActive: boolean) => {
 
   return { id: newCategory.id, ...(newCategory.data() as IAdminDoc) };
 };
+
+export const getManagerById = async (id: string) => {
+  const existedManager = await getDoc(doc(adminRef, id));
+
+  if (!existedManager) {
+    return undefined;
+  }
+
+  const category = existedManager.data() as IAdminDoc;
+
+  return {
+    ...category,
+    id: existedManager.id,
+  };
+};

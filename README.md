@@ -56,6 +56,7 @@
    - color: string
    - size: string
    - price: number
+- defaultPrice: number
 ```
 
 ### Coupons

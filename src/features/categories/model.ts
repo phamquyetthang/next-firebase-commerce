@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  documentId,
   endAt,
   getCountFromServer,
   getDoc,
@@ -111,6 +112,16 @@ export const getCategoryById = async (id: string) => {
   };
 };
 
+export const getCategoryByIds = async (ids: string[]) => {
+  const categories = await getDocs(
+    query(categoriesRef, where(documentId(), "in", ids))
+  );
+
+  return categories.docs.map((d) => ({
+    ...(d.data() as ICategoryDoc),
+    id: d.id,
+  }));
+};
 export const getCategories = async (
   data: IGetDataInput
 ): Promise<IPaginationRes<ICategoryDb>> => {
