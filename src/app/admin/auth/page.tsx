@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/features/managers/rules";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function AdminLoginForm() {
   const router = useRouter();
@@ -117,6 +118,7 @@ export default function AdminLoginForm() {
           </Card>
         </form>
       </Form>
+      <Toaster />
     </div>
   );
 }

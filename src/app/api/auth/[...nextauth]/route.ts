@@ -21,6 +21,9 @@ export const adminLogin = async (email: string, password: string) => {
     throw Error("The password is wrong");
   }
 
+  if (!existedAdmin.isActive) {
+    throw Error("This admin is inactive!");
+  }
   return {
     email: existedAdmin.email,
     id: existedAdmin.id,
@@ -28,7 +31,7 @@ export const adminLogin = async (email: string, password: string) => {
 };
 export const authOptions: NextAuthOptions = {
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   providers: [
     CredentialsProvider({

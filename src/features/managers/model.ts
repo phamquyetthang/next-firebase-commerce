@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  doc,
   endAt,
   getCountFromServer,
   getDoc,
@@ -11,6 +12,7 @@ import {
   startAfter,
   startAt,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { IAdminDb, IAdminDoc, ICreateAdminInput } from "./type";
@@ -53,6 +55,7 @@ export const createAdmin = async (data: ICreateAdminInput) => {
   const newAdminRef = await addDoc(adminRef, {
     email: data.email,
     password: hashedPassword,
+    isActive: data.isActive,
     created_at: Timestamp.now(),
     updated_at: Timestamp.now(),
   });
@@ -104,4 +107,14 @@ export const getManagers = async (
   const total = await getCountFromServer(query(adminRef, ...queriesKeyword));
 
   return { meta: { total: total.data().count }, data: managers };
+};
+
+export const updateActiveAdmin = async (id: string, isActive: boolean) => {
+  await updateDoc(doc(adminRef, id), {
+    isActive,
+  });
+
+  const newCategory = await getDoc(doc(adminRef, id));
+
+  return { id: newCategory.id, ...(newCategory.data() as IAdminDoc) };
 };
