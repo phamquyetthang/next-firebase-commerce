@@ -19,6 +19,7 @@ import { IPaginationRes } from "@/features/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import Upload from "./upload";
 
 interface IProps {
   data?: ICreateProductInput;
@@ -131,6 +132,21 @@ const FormProduct = ({ data, onSubmit }: IProps) => {
                       value: c.id,
                     }))}
                   />
+                </FormControl>
+                <FormDescription>This is product categories.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="images"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Product categories</FormLabel>
+                <FormControl>
+                  <Upload onChange={(images) => field.onChange(images)} />
                 </FormControl>
                 <FormDescription>This is product categories.</FormDescription>
                 <FormMessage />

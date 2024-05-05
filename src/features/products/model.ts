@@ -17,7 +17,7 @@ import {
   where,
 } from "firebase/firestore";
 import { IProductDb, IProductDoc, ICreateProductInput } from "./type";
-import { db } from "@/utils/firebase";
+import { db, storage } from "@/utils/firebase";
 import { COLLECTIONS } from "@/constants/common";
 import { AddProductSchema } from "./rules";
 import { formatZodMessage } from "@/utils/common/zod-message";
@@ -25,6 +25,7 @@ import { IGetDataInput, IPaginationRes } from "../type";
 import { getLastVisibleDoc } from "@/utils/common/queries";
 import { getManagerById } from "../managers/model";
 import { getCategoryByIds } from "../categories/model";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const productsRef = collection(db, COLLECTIONS.PRODUCT);
 
@@ -164,4 +165,12 @@ export const getProducts = async (
 
 export const deleteProductById = (id: string) => {
   return deleteDoc(doc(productsRef, id));
+};
+
+export const uploadImageProduct = async (image: File): Promise<string> => {
+  console.log("🚀 ~ uploadImageProduct ~ image:", image);
+  const productStorageRef = ref(storage, image.name);
+  const snapshot = await uploadBytes(productStorageRef, image);
+
+  return await getDownloadURL(ref(storage, snapshot.metadata.fullPath));
 };
