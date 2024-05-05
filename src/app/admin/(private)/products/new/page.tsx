@@ -12,7 +12,7 @@ const CreateProduct = () => {
     try {
       await onAddProduct(data);
       toast.info("Add product successfully !");
-      router.push("/admin/categories");
+      router.push("/admin/products");
     } catch (error) {
       console.log("🚀 ~ CreateProduct ~ error:", error);
       toast.error("Cannot Add product!");
