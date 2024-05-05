@@ -17,14 +17,16 @@ import { AddProductSchema } from "@/features/products/rules";
 import { ICreateProductInput } from "@/features/products/type";
 import { IPaginationRes } from "@/features/type";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Upload from "./upload";
+import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill";
 
 interface IProps {
   data?: ICreateProductInput;
   onSubmit: (data: ICreateProductInput) => void;
-  adminId: string
+  adminId: string;
 }
 const FormProduct = ({ data, onSubmit, adminId }: IProps) => {
   const [categories, setCategories] = useState<ICategoryDb[]>([]);
@@ -91,7 +93,37 @@ const FormProduct = ({ data, onSubmit, adminId }: IProps) => {
               <FormItem>
                 <FormLabel>Product description</FormLabel>
                 <FormControl>
-                  <Input placeholder="product-1" {...field} />
+                  <ReactQuill
+                    theme="snow"
+                    {...field}
+                    modules={{
+                      toolbar: {
+                        container: [
+                          [{ header: "1" }, { header: "2" }, { font: [] }],
+                          [{ size: [] }],
+                          [
+                            "bold",
+                            "italic",
+                            "underline",
+                            "strike",
+                            "blockquote",
+                          ],
+                          [
+                            { list: "ordered" },
+                            { list: "bullet" },
+                            { indent: "-1" },
+                            { indent: "+1" },
+                          ],
+                          ["link", "image", "video"],
+                          ["code-block"],
+                          ["clean"],
+                        ],
+                      },
+                      clipboard: {
+                        matchVisual: false,
+                      },
+                    }}
+                  />
                 </FormControl>
                 <FormDescription>This is product description.</FormDescription>
                 <FormMessage />
