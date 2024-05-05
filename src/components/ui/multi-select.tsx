@@ -116,7 +116,7 @@ const MultiSelectFormField = React.forwardRef<
         selectedValuesSet.current.add(value);
         setSelectedValues([...selectedValues, value]);
       }
-      onValueChange([...selectedValuesSet.current]);
+      onValueChange([...selectedValuesSet.current as any]);
     };
 
     return (
