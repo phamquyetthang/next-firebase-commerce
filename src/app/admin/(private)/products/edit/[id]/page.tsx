@@ -3,7 +3,7 @@ import React from "react";
 import EditFormProduct from "./edit-form";
 import { getProductById } from "@/features/products/model";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/api/auth/option";
 
 interface IProps {
   params: {

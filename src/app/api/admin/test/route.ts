@@ -1,11 +1,11 @@
 import { addCategory, getCategories } from "@/features/categories/model";
 import { NextResponse } from "next/server";
 
-export const GET = async () => {
-  const data = await getCategories();
+// export const GET = async () => {
+//   const data = await getCategories();
 
-  return NextResponse.json(data);
-};
+//   return NextResponse.json(data);
+// };
 
 export const POST = async (req: Request) => {
   try {

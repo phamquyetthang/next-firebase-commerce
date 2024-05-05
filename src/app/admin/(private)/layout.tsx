@@ -22,10 +22,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import Logout from "@/components/common/logout";
 import NavLink from "@/components/common/navlink";
+import { authOptions } from "@/app/api/auth/option";
 
 export const ADMIN_PAGES = [
   {
