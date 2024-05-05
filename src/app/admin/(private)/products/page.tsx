@@ -11,7 +11,7 @@ import { IGetDataInput } from "@/features/type";
 import TableHeader from "@/components/common/table-header";
 import TableLoading from "@/components/common/table-loading";
 import TablePagination from "@/components/common/table-pagination";
-import ProductTable from "../table";
+import ProductTable from "./table";
 import { getProducts } from "@/features/products/model";
 
 interface IProps {

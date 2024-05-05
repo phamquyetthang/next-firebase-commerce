@@ -48,7 +48,14 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  callbacks: {},
+  callbacks: {
+    session({ session, token, user }) {
+      if (token) {
+        session.user.id = token.sub || '';
+      }
+      return session;
+    },
+  },
 };
 
 const authHandler = NextAuth(authOptions);

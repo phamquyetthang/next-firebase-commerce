@@ -5,10 +5,11 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 interface IProps {
+  defaultImages?: string[]
   onChange: (images: string[]) => void;
 }
-const Upload = ({ onChange }: IProps) => {
-  const [images, setImages] = useState([]);
+const Upload = ({ onChange, defaultImages }: IProps) => {
+  const [images, setImages] = useState(defaultImages || []);
   const onUploadImageProduct = async (file: File) => {
     const formData = new FormData();
     formData.append("image", file);
