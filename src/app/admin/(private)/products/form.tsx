@@ -22,6 +22,8 @@ import { useForm } from "react-hook-form";
 import Upload from "./upload";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
+import debounce from "lodash-es/debounce";
+import unionBy from "lodash-es/unionBy";
 
 interface IProps {
   data?: ICreateProductInput;
@@ -30,11 +32,17 @@ interface IProps {
 }
 const FormProduct = ({ data, onSubmit, adminId }: IProps) => {
   const [categories, setCategories] = useState<ICategoryDb[]>([]);
-  const fetchCategories = (keyword: string) => {
-    fetch(`${BASE_URL}/api/admin/categories?keyword=${keyword}`)
-      .then((res) => res.json())
-      .then((data: IPaginationRes<ICategoryDb>) => setCategories(data.data));
-  };
+  const fetchCategories = useCallback(
+    debounce((keyword: string) => {
+      fetch(`${BASE_URL}/api/admin/categories?keyword=${keyword}`)
+        .then((res) => res.json())
+        .then((data: IPaginationRes<ICategoryDb>) =>
+          setCategories((pre) => unionBy(pre.concat(data.data), "id"))
+        );
+    }, 1000),
+    []
+  );
+
   const form = useForm<ICreateProductInput>({
     resolver: zodResolver(AddProductSchema),
     defaultValues: {
@@ -164,6 +172,11 @@ const FormProduct = ({ data, onSubmit, adminId }: IProps) => {
                     placeholder="Categories"
                     defaultValue={field.value}
                     onValueChange={(ids) => field.onChange(ids)}
+                    onSearch={(search) => {
+                      if (search) {
+                        fetchCategories(search);
+                      }
+                    }}
                     options={categories.map((c) => ({
                       label: c.name,
                       value: c.id,
