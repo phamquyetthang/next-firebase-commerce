@@ -65,6 +65,7 @@ export const addProduct = async (
     ...restData,
     created_by: created_by,
     categories: categories,
+    categoryIds: categories.map((c) => c.id),
     created_at: Timestamp.now(),
     updated_at: Timestamp.now(),
   });
@@ -93,8 +94,12 @@ export const editProduct = async (
     }
   }
 
+  const categories = await getCategoryByIds(data.categoryIds);
+
   await updateDoc(doc(productsRef, id), {
     ...data,
+    categories: categories,
+    categoryIds: categories.map((c) => c.id),
     updated_at: Timestamp.now(),
   });
 
@@ -119,10 +124,14 @@ export const getProductById = async (id: string) => {
 };
 
 export const getProducts = async (
-  data: IGetDataInput
+  data: IGetDataInput & { categoryIds?: string[] }
 ): Promise<IPaginationRes<IProductDb>> => {
-  const { keyword, page, size, orderField, orderType } = data;
+  const { keyword, page, size, orderField, orderType, categoryIds } = data;
   const queries = [];
+
+  if (categoryIds?.length) {
+    queries.push(where("categoryIds", "array-contains-any", categoryIds));
+  }
   queries.push(orderBy(orderField, orderType));
   const queriesKeyword = [];
   if (keyword) {
@@ -168,7 +177,6 @@ export const deleteProductById = (id: string) => {
 };
 
 export const uploadImageProduct = async (image: File): Promise<string> => {
-  console.log("🚀 ~ uploadImageProduct ~ image:", image);
   const productStorageRef = ref(storage, image.name);
   const snapshot = await uploadBytes(productStorageRef, image);
 

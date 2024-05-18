@@ -13,9 +13,10 @@ import TableLoading from "@/components/common/table-loading";
 import TablePagination from "@/components/common/table-pagination";
 import ProductTable from "./table";
 import { getProducts } from "@/features/products/model";
+import CategoriesSelect from "./categories-select";
 
 interface IProps {
-  searchParams: IGetDataInput;
+  searchParams: IGetDataInput & { categories?: string };
 }
 const Products = async ({ searchParams }: IProps) => {
   const res = await getProducts({
@@ -23,10 +24,14 @@ const Products = async ({ searchParams }: IProps) => {
     page: searchParams.page,
     orderField: searchParams.orderField || "name",
     orderType: searchParams.orderType || "desc",
+    categoryIds: searchParams.categories?.split(",") || [],
   });
   return (
     <div>
       <TableHeader addTitle="Add Products" addPath="/admin/products/new" />
+      <div className="max-w-52 my-4">
+        <CategoriesSelect />
+      </div>
       <Card x-chunk="dashboard-06-chunk-0">
         <CardHeader>
           <CardTitle>Products</CardTitle>
