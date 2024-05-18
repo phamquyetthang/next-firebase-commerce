@@ -38,7 +38,18 @@ const CategoryTable = ({ data }: IProps) => {
       <TableBody>
         {data.map((category) => (
           <TableRow key={category.id}>
-            <TableCell className="font-medium">{category.name}</TableCell>
+            <TableCell className="font-medium cursor-pointer">
+              <Link
+                href={{
+                  pathname: "/admin/products",
+                  query: {
+                    categories: category.id,
+                  },
+                }}
+              >
+                {category.name}
+              </Link>
+            </TableCell>
             <TableCell>{category.slug}</TableCell>
             <TableCell>
               {moment.unix(category.created_at.seconds).calendar()}

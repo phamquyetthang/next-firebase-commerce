@@ -64,7 +64,6 @@ export const addProduct = async (
   const newProductRef = await addDoc(productsRef, {
     ...restData,
     created_by: created_by,
-    categories: categories,
     categoryIds: categories.map((c) => c.id),
     created_at: Timestamp.now(),
     updated_at: Timestamp.now(),
@@ -98,7 +97,6 @@ export const editProduct = async (
 
   await updateDoc(doc(productsRef, id), {
     ...data,
-    categories: categories,
     categoryIds: categories.map((c) => c.id),
     updated_at: Timestamp.now(),
   });
@@ -116,9 +114,10 @@ export const getProductById = async (id: string) => {
   }
 
   const product = existedProduct.data() as IProductDoc;
-
+  const categories = await getCategoryByIds(product.categoryIds);
   return {
     ...product,
+    categories,
     id: existedProduct.id,
   };
 };
@@ -162,14 +161,22 @@ export const getProducts = async (
     query(productsRef, ...queries, limit(size || 5))
   );
 
-  const products = productsDocsRef.docs.slice(0, 5).map((d) => ({
-    ...(d.data() as IProductDoc),
-    id: d.id,
-  }));
+  const products = productsDocsRef.docs.slice(0, 5).map(async (d) => {
+    const categoryIds = d.data().categoryIds;
+    const categories = categoryIds?.length ? await getCategoryByIds(categoryIds) : [];
+    return {
+      ...(d.data() as IProductDoc),
+      categories,
+      id: d.id,
+    };
+  });
 
   const total = await getCountFromServer(query(productsRef, ...queriesKeyword));
 
-  return { meta: { total: total.data().count }, data: products };
+  return {
+    meta: { total: total.data().count },
+    data: await Promise.all(products),
+  };
 };
 
 export const deleteProductById = (id: string) => {

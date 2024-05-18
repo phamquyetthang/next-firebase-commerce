@@ -22,6 +22,7 @@ export interface IProductDb
   extends Omit<ICreateProductInput, "createdId" | "categoryIds">,
     IDocDb {
   created_by: IAdminDb;
-  categories: ICategoryDb[];
+  categories: ICategoryDb[]; // not save to db
+  categoryIds: string[];
 }
 export interface IProductDoc extends Omit<IProductDb, "id"> {}
