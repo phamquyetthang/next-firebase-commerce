@@ -25,6 +25,7 @@ import { AddCategorySchema } from "./rules";
 import { formatZodMessage } from "@/utils/common/zod-message";
 import { IGetDataInput, IPaginationRes } from "../type";
 import { getLastVisibleDoc } from "@/utils/common/queries";
+import { date } from "zod";
 
 const categoriesRef = collection(db, COLLECTIONS.CATEGORY);
 
@@ -167,6 +168,20 @@ export const getCategories = async (
   );
 
   return { meta: { total: total.data().count }, data: categories };
+};
+
+export const getAllCategories = async () => {
+  const categoriesDocsRef = await getDocs(query(categoriesRef));
+  const categories = categoriesDocsRef.docs.map((d) => {
+    const data = d.data() as ICategoryDoc;
+    return {
+      slug: data.slug,
+      name: data.name,
+      id: d.id,
+    };
+  });
+
+  return { data: categories };
 };
 
 export const deleteCategoryById = (id: string) => {

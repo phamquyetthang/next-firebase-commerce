@@ -13,10 +13,11 @@ import React, { useMemo } from "react";
 
 interface IProps {
   total: number;
+  items?: number
 }
-const TablePagination = ({ total }: IProps) => {
+const TablePagination = ({ total, items }: IProps) => {
   const searchParams = useSearchParams();
-  const size = 5;
+  const size = items || 5;
 
   const page = useMemo(
     () => Number(searchParams.get("page") || 1),

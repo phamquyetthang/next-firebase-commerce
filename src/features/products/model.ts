@@ -126,6 +126,8 @@ export const getProducts = async (
   data: IGetDataInput & { categoryIds?: string[] }
 ): Promise<IPaginationRes<IProductDb>> => {
   const { keyword, page, size, orderField, orderType, categoryIds } = data;
+  console.log("🚀 ~ categoryIds:", categoryIds)
+  console.log("🚀 ~ size:", size)
   const queries = [];
 
   if (categoryIds?.length) {
@@ -161,7 +163,7 @@ export const getProducts = async (
     query(productsRef, ...queries, limit(size || 5)),
   );
 
-  const products = productsDocsRef.docs.slice(0, 5).map(async (d) => {
+  const products = productsDocsRef.docs.slice(0, Number(size || 5)).map(async (d) => {
     const categoryIds = d.data().categoryIds;
     const categories = categoryIds?.length ? await getCategoryByIds(categoryIds) : [];
     return {

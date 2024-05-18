@@ -24,7 +24,9 @@ const Products = async ({ searchParams }: IProps) => {
     page: searchParams.page,
     orderField: searchParams.orderField || "name",
     orderType: searchParams.orderType || "desc",
-    categoryIds: searchParams.categories?.split(",") || [],
+    categoryIds: searchParams.categories
+      ? searchParams.categories?.split(",")
+      : [],
   });
   return (
     <div>
