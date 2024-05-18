@@ -158,7 +158,7 @@ export const getProducts = async (
   }
 
   const productsDocsRef = await getDocs(
-    query(productsRef, ...queries, limit(size || 5))
+    query(productsRef, ...queries, limit(size || 5)),
   );
 
   const products = productsDocsRef.docs.slice(0, 5).map(async (d) => {

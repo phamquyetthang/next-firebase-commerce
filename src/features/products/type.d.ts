@@ -2,6 +2,12 @@ import { ICategoryDb } from "../categories/type";
 import { IAdminDb } from "../managers/type";
 import { IDocDb } from "../type";
 
+export interface IProperties {
+  name: string;
+  color?: string;
+  size?: string;
+  price: number;
+}
 export interface ICreateProductInput {
   name: string;
   slug: string;
@@ -9,12 +15,7 @@ export interface ICreateProductInput {
   createdId: string;
   images?: string[]; // url to storage firebase
   categoryIds: string[];
-  properties: Array<{
-    name: string;
-    color?: string;
-    size?: string;
-    price: number;
-  }>;
+  properties: Array<IProperties>;
   defaultPrice?: number;
 }
 

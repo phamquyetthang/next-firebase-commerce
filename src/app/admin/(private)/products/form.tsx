@@ -24,6 +24,7 @@ import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 import debounce from "lodash-es/debounce";
 import unionBy from "lodash-es/unionBy";
+import PropertiesField from "./propreties-field";
 
 interface IProps {
   data?: ICreateProductInput;
@@ -50,6 +51,7 @@ const FormProduct = ({ data, onSubmit, adminId }: IProps) => {
       createdId: data?.createdId || adminId,
     },
   });
+  console.log("🚀 ~ FormProduct ~ form:", form.formState.errors);
 
   useEffect(() => {
     fetchCategories("");
@@ -202,6 +204,24 @@ const FormProduct = ({ data, onSubmit, adminId }: IProps) => {
                   />
                 </FormControl>
                 <FormDescription>This is product categories.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="properties"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Product Properties</FormLabel>
+                <FormControl>
+                  <PropertiesField
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
+                </FormControl>
+                <FormDescription>This is product properties.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
