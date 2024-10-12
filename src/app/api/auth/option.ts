@@ -1,9 +1,16 @@
-import { loginSchema } from "@/features/managers/rules";
-import { ICreateAdminInput } from "@/features/managers/type";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+
+import { loginSchema } from "@/features/managers/rules";
+import { ICreateAdminInput } from "@/features/managers/type";
 import { findAdminByEmail } from "@/features/managers/model";
+
 import { comparePassword } from "@/utils/common/password";
+import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
+import { auth } from "@/utils/firebase";
+
+const provider = new GoogleAuthProvider();
 
 const adminLogin = async (email: string, password: string) => {
   const existedAdmin = await findAdminByEmail(email);
@@ -26,6 +33,7 @@ const adminLogin = async (email: string, password: string) => {
   return {
     email: existedAdmin.email,
     id: existedAdmin.id,
+    name: "adminHelo@private",
   };
 };
 
@@ -34,6 +42,10 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
     CredentialsProvider({
       credentials: {},
       async authorize(credentials, req) {
@@ -49,9 +61,44 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({ account }) {
+      if (account?.provider === "google") {
+        const credential = GoogleAuthProvider.credential(
+          account.id_token,
+          account.access_token
+        );
+        await signInWithCredential(auth, credential);
+        return true;
+      }
+      return true; // Do different verification for other providers that don't have `email_verified`
+    },
+    jwt: async function jwt({ token, account }) {
+      console.log(
+        "🚀 ~ file: option.ts:75 ~ jwt ~ token, account :",
+        token,
+        account
+      );
+      // if (account) {
+      //   token.id = account.id;
+      // }
+      if (token.name === "adminHelo@private") {
+        token.isAdmin = true;
+      }
+      return token;
+    },
     session({ session, token, user }) {
+      console.log(
+        "🚀 ~ file: option.ts:72 ~ session ~ session, token, user :",
+        session,
+        token,
+        user
+      );
       if (token) {
         session.user.id = token.sub || "";
+
+        if (token.isAdmin) {
+          session.user.isAdmin = true;
+        }
       }
       return session;
     },

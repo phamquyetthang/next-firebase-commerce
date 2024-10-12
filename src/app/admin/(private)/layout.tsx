@@ -51,9 +51,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
+  console.log("🚀 ~ file: layout.tsx:54 ~ session:", session);
 
   if (!session?.user) {
     redirect("/admin/auth");
+  }
+
+  if (!session?.user.isAdmin) {
+    redirect("/");
   }
 
   return (
