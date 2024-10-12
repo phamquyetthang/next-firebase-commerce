@@ -30,6 +30,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 const productsRef = collection(db, COLLECTIONS.PRODUCT);
 
 export const getProductBySlug = async (slug: string) => {
+  console.log("🚀 ~ file: model.ts:33 ~ getProductBySlug ~ slug:", slug, typeof slug)
   const existedProduct = await getDocs(
     query(productsRef, where("slug", "==", slug))
   );
