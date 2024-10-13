@@ -1,9 +1,10 @@
 "use client";
 import { IProperties } from "@/features/products/type";
 import { cn } from "@/lib/utils";
+import useChangeQuery from "@/utils/hooks/useChangeQuery";
 import { Radio, RadioGroup } from "@headlessui/react";
 import { set, uniq } from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 
 interface IProps {
   properties: IProperties[];
@@ -11,6 +12,7 @@ interface IProps {
 const AddToCartForm = ({ properties }: IProps) => {
   const [selectedColor, setSelectedColor] = useState<string>();
   const [selectedSize, setSelectedSize] = useState<string>();
+  const { onChangeQuery } = useChangeQuery();
 
   const [selectedProperty, setSelectedProperty] = useState<IProperties>();
 
@@ -45,8 +47,12 @@ const AddToCartForm = ({ properties }: IProps) => {
     }
   }, [properties, selectedColor, selectedSize]);
 
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onChangeQuery("cartOpen", "true");
+  };
   return (
-    <form className="mt-10">
+    <form className="mt-10" onSubmit={onSubmit}>
       <div>
         <h3 className="text-sm font-medium text-gray-900">Color</h3>
 
@@ -142,7 +148,7 @@ const AddToCartForm = ({ properties }: IProps) => {
         type="submit"
         className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
       >
-        Add to bag
+        Add to cart
       </button>
     </form>
   );

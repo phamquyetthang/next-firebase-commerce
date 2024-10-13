@@ -6,6 +6,7 @@ import Link from "next/link";
 import AccountButton from "./account-button";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/option";
+import CartSlider from "./cart-slider";
 
 export default async function RootLayout({
   children,
@@ -28,10 +29,8 @@ export default async function RootLayout({
 
         <div className="flex gap-8">
           <AccountButton email={session?.user.email || ''} />
-          <Button>
-            <ShoppingCart />
-            Cart
-          </Button>
+
+          <CartSlider />
         </div>
       </div>
       {children}

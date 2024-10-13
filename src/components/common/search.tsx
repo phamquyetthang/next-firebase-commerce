@@ -2,22 +2,14 @@
 import { Search } from "lucide-react";
 import React, { useState } from "react";
 import { Input } from "../ui/input";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import useChangeQuery from "@/utils/hooks/useChangeQuery";
 
 const SearchBar = () => {
-  const searchParams = useSearchParams();
-  const { replace } = useRouter();
-  const pathname = usePathname();
-  const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
+  const { onChangeQuery, getQuery } = useChangeQuery();
+  const [keyword, setKeyword] = useState(getQuery("keyword"));
 
   const onSubmitSearch = () => {
-    const params = new URLSearchParams(searchParams);
-    if (keyword) {
-      params.set("keyword", keyword);
-    } else {
-      params.delete("keyword");
-    }
-    replace(`${pathname}?${params.toString()}`);
+    onChangeQuery("keyword", keyword);
   };
   return (
     <div className="relative flex-1 md:grow-0">

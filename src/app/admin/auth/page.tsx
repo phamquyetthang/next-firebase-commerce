@@ -54,12 +54,9 @@ export default function AdminLoginForm() {
       });
 
       if (res?.error) {
-        console.log("🚀 ~ onLogin ~ res?.error:", res?.error)
+        console.log("🚀 ~ onLogin ~ res?.error:", res?.error);
         toast.error(
-          `Cannot login, ${
-            res?.error ||
-            "check you email or password"
-          }`
+          `Cannot login, ${res?.error || "check you email or password"}`
         );
       } else {
         router.push("/admin/categories");
@@ -77,6 +74,8 @@ export default function AdminLoginForm() {
               <CardTitle className="text-2xl">Admin Login</CardTitle>
               <CardDescription>
                 Enter your email below to login to your account.
+                <br />
+                <b>admin5@gmail.com / 123</b>
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
