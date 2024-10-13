@@ -10,36 +10,9 @@ import {
 import { ShoppingCart, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useChangeQuery from "@/utils/hooks/useChangeQuery";
+import { ICartDataRes } from "@/features/cart/type";
 
-const products = [
-  {
-    id: 1,
-    name: "Throwback Hip Bag",
-    href: "#",
-    color: "Salmon",
-    price: "$90.00",
-    quantity: 1,
-    imageSrc:
-      "https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-01.jpg",
-    imageAlt:
-      "Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.",
-  },
-  {
-    id: 2,
-    name: "Medium Stuff Satchel",
-    href: "#",
-    color: "Blue",
-    price: "$32.00",
-    quantity: 1,
-    imageSrc:
-      "https://tailwindui.com/plus/img/ecommerce-images/shopping-cart-page-04-product-02.jpg",
-    imageAlt:
-      "Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.",
-  },
-  // More products...
-];
-
-export default function CartSlider() {
+export default function CartSlider({ products }: ICartDataRes) {
   const { onChangeQuery, getQuery } = useChangeQuery();
   const [open, setOpen] = useState(false);
 
@@ -101,25 +74,25 @@ export default function CartSlider() {
                           className="-my-6 divide-y divide-gray-200"
                         >
                           {products.map((product) => (
-                            <li key={product.id} className="flex py-6">
+                            <li key={product.data?.id} className="flex py-6">
                               <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                 <img
-                                  alt={product.imageAlt}
-                                  src={product.imageSrc}
+                                  src={product.data?.images?.[0] || ""}
+                                  alt={product.data?.name}
                                   className="h-full w-full object-cover object-center"
                                 />
                               </div>
 
-                              <div className="ml-4 flex flex-1 flex-col">
+                              <div className="ml-4 flex flex-1 flex-col w-full overflow-hidden">
                                 <div>
                                   <div className="flex justify-between text-base font-medium text-gray-900">
-                                    <h3>
-                                      <a href={product.href}>{product.name}</a>
-                                    </h3>
-                                    <p className="ml-4">{product.price}</p>
+                                    <h3>{product.data?.name}</h3>
+                                    <p className="ml-4">
+                                      {product.data?.defaultPrice}
+                                    </p>
                                   </div>
-                                  <p className="mt-1 text-sm text-gray-500">
-                                    {product.color}
+                                  <p className="mt-1 text-sm text-gray-500 whitespace-break-spaces">
+                                    {product.property}
                                   </p>
                                 </div>
                                 <div className="flex flex-1 items-end justify-between text-sm">

@@ -1,12 +1,12 @@
 import SearchBar from "@/components/common/search";
-import { Button } from "@/components/ui/button";
-import { ShoppingCart, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import AccountButton from "./account-button";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/option";
 import CartSlider from "./cart-slider";
+import { auth } from "@/utils/firebase";
+import { getMyCart } from "@/features/cart/model";
 
 export default async function RootLayout({
   children,
@@ -14,6 +14,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
+
+  const myCart = session?.user.id ? await getMyCart(session?.user.id) : null;
 
   return (
     <div className="relative container">
@@ -28,9 +30,9 @@ export default async function RootLayout({
         </div>
 
         <div className="flex gap-8">
-          <AccountButton email={session?.user.email || ''} />
+          <AccountButton email={session?.user.email || ""} />
 
-          <CartSlider />
+          <CartSlider id={myCart?.id || ""} products={myCart?.products || []} />
         </div>
       </div>
       {children}

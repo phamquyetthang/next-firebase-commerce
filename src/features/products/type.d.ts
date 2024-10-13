@@ -7,6 +7,7 @@ export interface IProperties {
   color?: string;
   size?: string;
   price: number;
+  id: string;
 }
 export interface ICreateProductInput {
   name: string;

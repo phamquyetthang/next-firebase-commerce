@@ -3,15 +3,23 @@ import { IProperties } from "@/features/products/type";
 import { cn } from "@/lib/utils";
 import useChangeQuery from "@/utils/hooks/useChangeQuery";
 import { Radio, RadioGroup } from "@headlessui/react";
-import { set, uniq } from "lodash";
+import { uniq } from "lodash";
 import React, { FormEvent, useEffect, useState } from "react";
+import { addToMyCartAction } from "../../action";
+import { signIn } from "next-auth/react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface IProps {
   properties: IProperties[];
+  uuid?: string;
+  id: string;
 }
-const AddToCartForm = ({ properties }: IProps) => {
+const AddToCartForm = ({ properties, uuid, id }: IProps) => {
   const [selectedColor, setSelectedColor] = useState<string>();
   const [selectedSize, setSelectedSize] = useState<string>();
+  const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(false)
   const { onChangeQuery } = useChangeQuery();
 
   const [selectedProperty, setSelectedProperty] = useState<IProperties>();
@@ -47,9 +55,22 @@ const AddToCartForm = ({ properties }: IProps) => {
     }
   }, [properties, selectedColor, selectedSize]);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onChangeQuery("cartOpen", "true");
+    setLoading(true)
+
+    if (uuid) {
+      await addToMyCartAction(uuid, {
+        id,
+        property: JSON.stringify(selectedProperty),
+        quantity: quantity,
+      });
+      onChangeQuery("cartOpen", "true");
+    } else {
+      await signIn("google");
+    }
+
+    setLoading(false)
   };
   return (
     <form className="mt-10" onSubmit={onSubmit}>
@@ -144,8 +165,19 @@ const AddToCartForm = ({ properties }: IProps) => {
         </fieldset>
       </div>
 
+      <div className="space-y-2 mt-2">
+        <Label>Quantity</Label>
+        <Input
+          title="Quantity"
+          type="number"
+          value={quantity}
+          onChange={(e) => setQuantity(Number(e.target.value))}
+        />
+      </div>
+
       <button
         type="submit"
+        disabled={loading}
         className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
       >
         Add to cart

@@ -1,5 +1,7 @@
 import { getProductBySlug } from "@/features/products/model";
 import AddToCartForm from "./add-to-cart-form";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/option";
 
 interface IProps {
   params: {
@@ -7,11 +9,9 @@ interface IProps {
   };
 }
 export default async function DetailProduct({ params: { slug } }: IProps) {
+  const session = await getServerSession(authOptions);
   const productDetail = await getProductBySlug(slug);
-  console.log(
-    "🚀 ~ file: page.tsx:64 ~ DetailProduct ~ productDetail:",
-    productDetail
-  );
+
   return (
     <div className="bg-white">
       <div className="pt-6">
@@ -77,7 +77,11 @@ export default async function DetailProduct({ params: { slug } }: IProps) {
               {productDetail?.defaultPrice}
             </p>
 
-            <AddToCartForm properties={productDetail?.properties || []} />
+            <AddToCartForm
+              properties={productDetail?.properties || []}
+              id={productDetail?.id || ""}
+              uuid={session?.user.id}
+            />
           </div>
 
           <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">

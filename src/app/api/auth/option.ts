@@ -73,26 +73,16 @@ export const authOptions: NextAuthOptions = {
       return true; // Do different verification for other providers that don't have `email_verified`
     },
     jwt: async function jwt({ token, account }) {
-      console.log(
-        "🚀 ~ file: option.ts:75 ~ jwt ~ token, account :",
-        token,
-        account
-      );
-      // if (account) {
-      //   token.id = account.id;
-      // }
+      if(account?.provider === "google") {
+        const id =  auth.currentUser?.uid;
+        token.sub = id || "";
+      }
       if (token.name === "adminHelo@private") {
         token.isAdmin = true;
       }
       return token;
     },
     session({ session, token, user }) {
-      console.log(
-        "🚀 ~ file: option.ts:72 ~ session ~ session, token, user :",
-        session,
-        token,
-        user
-      );
       if (token) {
         session.user.id = token.sub || "";
 
