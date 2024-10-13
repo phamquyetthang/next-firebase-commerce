@@ -68,7 +68,7 @@
 - stripe_id: string
 ```
 
-### Users
+<!-- ### Users
 ```
 - email: string
 - google_id: string // or token
@@ -76,20 +76,22 @@
 - firstName: string
 - lastName: string
 - avt: string  // url to storage firebase
-```
+``` -->
 
 ### Cart
 ```
-- user: UserRef
-- products: Array<ProductRef>
+- uuid: string
+- products: Array<{
+  id: string;
+  property: string;
+  quantity: string;
+}>
 ```
 
 ### Orders
 ```
-- user: UserRef
+- uuid: string
 - products: Array<ProductRef>
-- coupon: CouponRef
-- total: number
 - stripe_invoice_id: string
 - status: string
 ```

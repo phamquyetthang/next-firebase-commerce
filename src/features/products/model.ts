@@ -3,6 +3,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  documentId,
   endAt,
   getCountFromServer,
   getDoc,
@@ -121,6 +122,17 @@ export const getProductById = async (id: string) => {
     categories,
     id: existedProduct.id,
   };
+};
+
+export const getProductByIds = async (ids: string[]) => {
+  const categories = await getDocs(
+    query(productsRef, where(documentId(), "in", ids))
+  );
+
+  return categories.docs.map((d) => ({
+    ...(d.data() as IProductDoc),
+    id: d.id,
+  }));
 };
 
 export const getProducts = async (
