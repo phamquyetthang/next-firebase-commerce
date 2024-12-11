@@ -8,6 +8,7 @@ export interface IProperties {
   size?: string;
   price: number;
   id: string;
+  stripeId?: string;
 }
 export interface ICreateProductInput {
   name: string;
@@ -18,6 +19,7 @@ export interface ICreateProductInput {
   categoryIds: string[];
   properties: Array<IProperties>;
   defaultPrice?: number;
+  stripeId?: string;
 }
 
 export interface IProductDb

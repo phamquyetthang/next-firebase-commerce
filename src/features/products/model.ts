@@ -27,11 +27,16 @@ import { getLastVisibleDoc } from "@/utils/common/queries";
 import { getManagerById } from "../managers/model";
 import { getCategoryByIds } from "../categories/model";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { createProductStripe } from "@/utils/stripe";
 
 const productsRef = collection(db, COLLECTIONS.PRODUCT);
 
 export const getProductBySlug = async (slug: string) => {
-  console.log("🚀 ~ file: model.ts:33 ~ getProductBySlug ~ slug:", slug, typeof slug)
+  console.log(
+    "🚀 ~ file: model.ts:33 ~ getProductBySlug ~ slug:",
+    slug,
+    typeof slug
+  );
   const existedProduct = await getDocs(
     query(productsRef, where("slug", "==", slug))
   );
@@ -60,11 +65,13 @@ export const addProduct = async (
   if (existedProduct) {
     throw Error("Slug have been used!");
   }
-  const { createdId, categoryIds, ...restData } = data;
+  const { createdId, categoryIds } = data;
+
+  const productSynced = await createProductStripe(data);
   const created_by = await getManagerById(createdId);
   const categories = await getCategoryByIds(categoryIds);
   const newProductRef = await addDoc(productsRef, {
-    ...restData,
+    ...productSynced,
     created_by: created_by,
     categoryIds: categories.map((c) => c.id),
     created_at: Timestamp.now(),
@@ -139,8 +146,8 @@ export const getProducts = async (
   data: IGetDataInput & { categoryIds?: string[] }
 ): Promise<IPaginationRes<IProductDb>> => {
   const { keyword, page, size, orderField, orderType, categoryIds } = data;
-  console.log("🚀 ~ categoryIds:", categoryIds)
-  console.log("🚀 ~ size:", size)
+  console.log("🚀 ~ categoryIds:", categoryIds);
+  console.log("🚀 ~ size:", size);
   const queries = [];
 
   if (categoryIds?.length) {
@@ -173,18 +180,22 @@ export const getProducts = async (
   }
 
   const productsDocsRef = await getDocs(
-    query(productsRef, ...queries, limit(size || 5)),
+    query(productsRef, ...queries, limit(size || 5))
   );
 
-  const products = productsDocsRef.docs.slice(0, Number(size || 5)).map(async (d) => {
-    const categoryIds = d.data().categoryIds;
-    const categories = categoryIds?.length ? await getCategoryByIds(categoryIds) : [];
-    return {
-      ...(d.data() as IProductDoc),
-      categories,
-      id: d.id,
-    };
-  });
+  const products = productsDocsRef.docs
+    .slice(0, Number(size || 5))
+    .map(async (d) => {
+      const categoryIds = d.data().categoryIds;
+      const categories = categoryIds?.length
+        ? await getCategoryByIds(categoryIds)
+        : [];
+      return {
+        ...(d.data() as IProductDoc),
+        categories,
+        id: d.id,
+      };
+    });
 
   const total = await getCountFromServer(query(productsRef, ...queriesKeyword));
 
