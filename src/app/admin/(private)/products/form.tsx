@@ -51,7 +51,10 @@ const FormProduct = ({ data, onSubmit, adminId }: IProps) => {
       createdId: data?.createdId || adminId,
     },
   });
-  console.log("🚀 ~ FormProduct ~ form:", form.formState.errors);
+
+  useEffect(() => {
+    form.reset(data);
+  }, [JSON.stringify(data)]);
 
   useEffect(() => {
     fetchCategories("");
@@ -62,9 +65,11 @@ const FormProduct = ({ data, onSubmit, adminId }: IProps) => {
       <Form {...form}>
         <form
           className="grid grid-cols-2 gap-4"
-          onSubmit={form.handleSubmit(onSubmit, (error) => {
-            console.log(error);
-          })}
+          onSubmit={form.handleSubmit(onSubmit,
+            (error) => {
+              console.log(error);
+            }
+          )}
         >
           <FormField
             control={form.control}
@@ -214,7 +219,7 @@ const FormProduct = ({ data, onSubmit, adminId }: IProps) => {
             name="properties"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Product Properties</FormLabel>
+                <FormLabel>Product Properties {JSON.stringify(field.value[0].stripeId)}</FormLabel>
                 <FormControl>
                   <PropertiesField
                     value={field.value}

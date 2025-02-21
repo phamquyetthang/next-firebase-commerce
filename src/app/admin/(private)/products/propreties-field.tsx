@@ -3,13 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { IProperties } from "@/features/products/type";
 import { Plus, Trash } from "lucide-react";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 
 const defaultProperties: IProperties = {
   name: "",
   color: "",
   size: "",
   price: 0,
+  stripeId: "",
 };
 
 interface IProps {
@@ -19,17 +20,25 @@ interface IProps {
 const PropertiesField = ({ value = [], onChange }: IProps) => {
   const [properties, setProperties] = useState<Array<IProperties>>(value);
 
+  useEffect(() => {
+    setProperties(value);
+  }, [JSON.stringify(value)]);
+
   const onAddProperty = () => {
     setProperties((pre) => pre.concat({ ...defaultProperties }));
   };
 
   const onRemoveProperty = (index: number) => {
-    setProperties((pre) => pre.filter((_, idx) => idx !== index));
+    setProperties((pre) => {
+      const newProperties = pre.filter((_, idx) => idx !== index);
+      onChange(newProperties);
+      return newProperties;
+    });
   };
 
   const onChangeValue = (e: ChangeEvent<HTMLInputElement>, index: number) => {
-    setProperties((pre) =>
-      pre.map((value, idx) => {
+    setProperties((pre) => {
+      const newProperties = pre.map((value, idx) => {
         if (idx === index) {
           return {
             ...value,
@@ -40,13 +49,14 @@ const PropertiesField = ({ value = [], onChange }: IProps) => {
           };
         }
         return value;
-      })
-    );
-    onChange(properties);
+      });
+      onChange(newProperties);
+      return newProperties;
+    });
   };
   return (
     <div className="flex gap-3 flex-col">
-      {properties.map(({ name, color, size, price }, index) => (
+      {properties.map(({ name, color, size, price, stripeId }, index) => (
         <div className="flex gap-3" key={index}>
           <Input
             placeholder="name"

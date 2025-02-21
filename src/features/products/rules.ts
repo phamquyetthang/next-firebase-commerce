@@ -19,6 +19,7 @@ export const AddProductSchema = z.object({
         color: z.string().optional(),
         size: z.string().optional(),
         price: z.number(),
+        stripeId: z.string().optional(),
       })
     )
     .optional(),

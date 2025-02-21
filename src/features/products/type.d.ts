@@ -7,7 +7,6 @@ export interface IProperties {
   color?: string;
   size?: string;
   price: number;
-  id: string;
   stripeId?: string;
 }
 export interface ICreateProductInput {

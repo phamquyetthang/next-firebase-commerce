@@ -15,4 +15,5 @@ export const onEditProduct = async (
 ) => {
   await editProduct(id, data);
   revalidatePath("/admin/products");
+  revalidatePath(`/admin/products/edit/${id}`);
 };

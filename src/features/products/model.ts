@@ -27,7 +27,7 @@ import { getLastVisibleDoc } from "@/utils/common/queries";
 import { getManagerById } from "../managers/model";
 import { getCategoryByIds } from "../categories/model";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { createProductStripe } from "@/utils/stripe";
+import { createProductStripe, updateProductStripe } from "@/utils/stripe";
 
 const productsRef = collection(db, COLLECTIONS.PRODUCT);
 
@@ -94,8 +94,8 @@ export const editProduct = async (
   }
 
   const oldProduct = await getDoc(doc(productsRef, id));
-
-  if (oldProduct.data() && data.slug !== (oldProduct.data() as any)?.slug) {
+  const oldProductData = oldProduct.data() as IProductDoc;
+  if (oldProductData && data.slug !== oldProductData?.slug) {
     const existedProduct = await getProductBySlug(data.slug);
     if (existedProduct) {
       throw Error("Slug have been used!");
@@ -104,8 +104,22 @@ export const editProduct = async (
 
   const categories = await getCategoryByIds(data.categoryIds);
 
-  await updateDoc(doc(productsRef, id), {
+  const dataSynced = await updateProductStripe({
+    ...oldProductData,
     ...data,
+    properties: data.properties.map((p) => {
+      const existedProperty = oldProductData.properties.find(
+        (e) => e.stripeId === p.stripeId
+      );
+      return {
+        ...existedProperty,
+        ...p,
+      };
+    }),
+  });
+
+  await updateDoc(doc(productsRef, id), {
+    ...dataSynced,
     categoryIds: categories.map((c) => c.id),
     updated_at: Timestamp.now(),
   });
@@ -146,8 +160,6 @@ export const getProducts = async (
   data: IGetDataInput & { categoryIds?: string[] }
 ): Promise<IPaginationRes<IProductDb>> => {
   const { keyword, page, size, orderField, orderType, categoryIds } = data;
-  console.log("🚀 ~ categoryIds:", categoryIds);
-  console.log("🚀 ~ size:", size);
   const queries = [];
 
   if (categoryIds?.length) {
