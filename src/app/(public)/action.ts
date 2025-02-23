@@ -1,7 +1,8 @@
 "use server";
 
 import { addToMyCart, removeItemFromMyCart, updateMyCart } from "@/features/cart/model";
-import { ICartDoc } from "@/features/cart/type";
+import { ICartDataRes, ICartDoc } from "@/features/cart/type";
+import { createPaymentLink } from "@/utils/stripe";
 import { revalidatePath } from "next/cache";
 
 export const updateMyCartAction = async (data: ICartDoc) => {
@@ -26,4 +27,8 @@ export const removeItemFromMyCartAction = async (
 ) => {
   await removeItemFromMyCart(uuid, itemId);
   revalidatePath("/");
+}
+
+export const createPaymentLinkAction = async (cartData: ICartDataRes) => { 
+  return createPaymentLink(cartData)
 }

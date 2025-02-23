@@ -11,10 +11,11 @@ import { ShoppingCart, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useChangeQuery from "@/utils/hooks/useChangeQuery";
 import { ICartDataRes } from "@/features/cart/type";
-import { removeItemFromMyCartAction } from "./action";
+import { createPaymentLinkAction, removeItemFromMyCartAction } from "./action";
 import clsx from "clsx";
 
-export default function CartSlider({ products, uuid }: ICartDataRes & {uuid?: string}) {
+export default function CartSlider({ uuid, ...cartData }: ICartDataRes & { uuid?: string }) {
+  const { products, } = cartData;
   const [loading, setLoading] = useState(false);
   const { onChangeQuery, getQuery } = useChangeQuery();
   const [open, setOpen] = useState(false);
@@ -33,6 +34,18 @@ export default function CartSlider({ products, uuid }: ICartDataRes & {uuid?: st
     if (uuid) {
    await  removeItemFromMyCartAction(uuid, itemId)
       
+    }
+    setLoading(false)
+  }
+
+
+  const goToCheckout = async () => {
+    setLoading(true);
+    const paymentLink = await createPaymentLinkAction(cartData);
+    const url = paymentLink?.url;
+    console.log("🚀 ~ goToCheckout ~ url:", url)
+    if(url){
+      location.href = url;
     }
     setLoading(false)
   }
@@ -105,9 +118,6 @@ export default function CartSlider({ products, uuid }: ICartDataRes & {uuid?: st
                                   </div>
                                   <div className="mt-1 text-sm text-gray-500 whitespace-break-spaces flex gap-1">
                                     <span>
-                                      {JSON.parse(product.property || '{}')['name']}
-                                    </span>
-                                    <span>
                                       {JSON.parse(product.property || '{}')['size']}
                                     </span>
                                     <span>
@@ -148,12 +158,13 @@ export default function CartSlider({ products, uuid }: ICartDataRes & {uuid?: st
                       Shipping and taxes calculated at checkout.
                     </p>
                     <div className="mt-6">
-                      <a
-                        href="#"
-                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                      <button
+                        onClick={goToCheckout}
+                        disabled={loading}
+                        className="w-full flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                       >
                         Checkout
-                      </a>
+                      </button>
                     </div>
                     <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                       <p>

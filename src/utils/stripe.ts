@@ -1,3 +1,4 @@
+import { ICartDataRes } from "@/features/cart/type";
 import { ICreateProductInput } from "@/features/products/type";
 import Stripe from "stripe";
 const stripe = new Stripe(
@@ -42,5 +43,53 @@ export const createProductStripe = async (data: ICreateProductInput) => {
       error
     );
     return data;
+  }
+};
+
+
+
+
+export const createPaymentLink = async (cartData: ICartDataRes) => {
+  try {
+    const lineItems = cartData.products
+      .map((p) => ({ ...p, property: JSON.parse(p.property || "{}") }))
+      .filter((p) => !!p.data && p.property["stripeId"])
+      .reduce((pre = [], cur) => {
+        if (!pre || pre.length === 0) {
+          pre.push(cur)
+          return pre
+        }
+
+        if (pre.some(p => p.property["stripeId"] === cur.property["stripeId"])) {
+          return pre.map(p => {
+            if (p.property["stripeId"] === cur.property["stripeId"]) {
+              return {
+                ...p,
+                quantity: p.quantity + cur.quantity
+              }
+            }
+            return p
+          })
+        } else {
+          pre.push(cur)
+        }
+
+        return pre
+      }, [] as Array<{ quantity: number; property: { stripeId: string }; itemId: number }>);
+    
+    const paymentLink = await stripe.paymentLinks.create({
+      line_items: lineItems.map(i => ({
+        price: i.property["stripeId"],
+        quantity: i.quantity,
+      })),
+      metadata: {
+        cartId: cartData.id,
+      }
+    });
+
+
+    return paymentLink
+  } catch (error) {
+    console.error("🚀 ~ createPaymentLink ~ error:", error);
   }
 };
