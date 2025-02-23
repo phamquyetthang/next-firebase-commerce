@@ -1,6 +1,6 @@
 "use server";
 
-import { addToMyCart, updateMyCart } from "@/features/cart/model";
+import { addToMyCart, removeItemFromMyCart, updateMyCart } from "@/features/cart/model";
 import { ICartDoc } from "@/features/cart/type";
 import { revalidatePath } from "next/cache";
 
@@ -19,3 +19,11 @@ export const addToMyCartAction = async (
   await addToMyCart(uuid, product);
   revalidatePath("/");
 };
+
+export const removeItemFromMyCartAction = async (
+  uuid: string,
+ itemId: number
+) => {
+  await removeItemFromMyCart(uuid, itemId);
+  revalidatePath("/");
+}

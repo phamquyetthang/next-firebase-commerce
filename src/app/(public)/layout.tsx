@@ -32,7 +32,7 @@ export default async function RootLayout({
         <div className="flex gap-8">
           <AccountButton email={session?.user.email || ""} />
 
-          <CartSlider id={myCart?.id || ""} products={myCart?.products || []} />
+          <CartSlider id={myCart?.id || ""} products={myCart?.products || []}  uuid={session?.user.id} />
         </div>
       </div>
       {children}

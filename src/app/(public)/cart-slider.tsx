@@ -11,8 +11,11 @@ import { ShoppingCart, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useChangeQuery from "@/utils/hooks/useChangeQuery";
 import { ICartDataRes } from "@/features/cart/type";
+import { removeItemFromMyCartAction } from "./action";
+import clsx from "clsx";
 
-export default function CartSlider({ products }: ICartDataRes) {
+export default function CartSlider({ products, uuid }: ICartDataRes & {uuid?: string}) {
+  const [loading, setLoading] = useState(false);
   const { onChangeQuery, getQuery } = useChangeQuery();
   const [open, setOpen] = useState(false);
 
@@ -24,6 +27,15 @@ export default function CartSlider({ products }: ICartDataRes) {
   useEffect(() => {
     setOpen(getQuery("cartOpen") === "true");
   }, [getQuery]);
+
+  const onRemoveItem = async (itemId: number) => {
+    setLoading(true);
+    if (uuid) {
+   await  removeItemFromMyCartAction(uuid, itemId)
+      
+    }
+    setLoading(false)
+  }
 
   return (
     <Fragment>
@@ -91,9 +103,17 @@ export default function CartSlider({ products }: ICartDataRes) {
                                       {product.data?.defaultPrice}
                                     </p>
                                   </div>
-                                  <p className="mt-1 text-sm text-gray-500 whitespace-break-spaces">
-                                    {product.property}
-                                  </p>
+                                  <div className="mt-1 text-sm text-gray-500 whitespace-break-spaces flex gap-1">
+                                    <span>
+                                      {JSON.parse(product.property || '{}')['name']}
+                                    </span>
+                                    <span>
+                                      {JSON.parse(product.property || '{}')['size']}
+                                    </span>
+                                    <span>
+                                      {JSON.parse(product.property || '{}')['color']}
+                                    </span>
+                                  </div>
                                 </div>
                                 <div className="flex flex-1 items-end justify-between text-sm">
                                   <p className="text-gray-500">
@@ -103,7 +123,9 @@ export default function CartSlider({ products }: ICartDataRes) {
                                   <div className="flex">
                                     <button
                                       type="button"
-                                      className="font-medium text-indigo-600 hover:text-indigo-500"
+                                      disabled={loading}
+                                      className={clsx("font-medium text-indigo-600 hover:text-indigo-500",{ "opacity-50": loading})}
+                                      onClick={() => product.data?.id && onRemoveItem(product.itemId)}
                                     >
                                       Remove
                                     </button>

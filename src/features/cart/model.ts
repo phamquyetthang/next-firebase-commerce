@@ -24,8 +24,9 @@ export const getMyCart = async (uuid: string) => {
   }
 
   const cart = existedCart.docs[0].data() as ICartDoc;
+  console.log("🚀 ~ getMyCart ~ cart:", cart)
 
-  const products = await getProductByIds(cart.products.map((item) => item.id));
+  const products = cart.products.length ? await getProductByIds(cart.products.map((item) => item.id)) : [];
 
   return {
     ...cart,
@@ -36,6 +37,7 @@ export const getMyCart = async (uuid: string) => {
         quantity: product.quantity,
         property: product.property,
         data: productInDb,
+        itemId: product.itemId
       };
     }),
   };
@@ -92,8 +94,35 @@ export const addToMyCart = async (
 
   await updateDoc(doc(cartsRef, id), {
     ...data,
-    products: [...data.products, product],
+    products: [...data.products, {...product, itemId: new Date().getTime()}],
     updated_at: Timestamp.now(),
+  });
+  const newCart = await getDoc(doc(cartsRef, id));
+
+  return { id: newCart.id, ...(newCart.data() as ICartDoc) };
+};
+
+
+export const removeItemFromMyCart = async (
+  uuid: string,
+  itemId: number
+) => {
+  const existedCarts = await getDocs(query(cartsRef, where("uuid", "==", uuid)));
+  let existedCart = existedCarts.docs[0];
+
+  if (!existedCart) {
+      return;
+  }
+
+  const id = existedCart.id;
+  const data = existedCart.data() as ICartDoc;
+
+  const newCartProducts = data.products.filter((p) => p.itemId !== itemId);
+
+  await updateDoc(doc(cartsRef, id), {
+      ...data,
+      products: newCartProducts,
+      updated_at: Timestamp.now(),
   });
   const newCart = await getDoc(doc(cartsRef, id));
 
