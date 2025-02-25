@@ -9,6 +9,9 @@ export interface ICartDoc {
     itemId: number
   }>;
   id?: string;
+  completed?: boolean;
+  payment_intent?: string;
+  payment_link?: string; 
 }
 
 export interface ICartDataRes {

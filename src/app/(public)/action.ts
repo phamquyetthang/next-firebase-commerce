@@ -29,6 +29,6 @@ export const removeItemFromMyCartAction = async (
   revalidatePath("/");
 }
 
-export const createPaymentLinkAction = async (cartData: ICartDataRes) => { 
-  return createPaymentLink(cartData)
+export const createPaymentLinkAction = async (cartData: ICartDataRes, redirectLink: string) => { 
+  return createPaymentLink(cartData, redirectLink)
 }

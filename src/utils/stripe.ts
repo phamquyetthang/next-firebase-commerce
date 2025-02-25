@@ -49,7 +49,7 @@ export const createProductStripe = async (data: ICreateProductInput) => {
 
 
 
-export const createPaymentLink = async (cartData: ICartDataRes) => {
+export const createPaymentLink = async (cartData: ICartDataRes, redirectLink: string) => {
   try {
     const lineItems = cartData.products
       .map((p) => ({ ...p, property: JSON.parse(p.property || "{}") }))
@@ -84,6 +84,12 @@ export const createPaymentLink = async (cartData: ICartDataRes) => {
       })),
       metadata: {
         cartId: cartData.id,
+      },
+      after_completion: {
+        type: 'redirect',
+        redirect: {
+          url: redirectLink
+        }
       }
     });
 

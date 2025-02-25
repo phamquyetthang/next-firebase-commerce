@@ -41,7 +41,7 @@ export default function CartSlider({ uuid, ...cartData }: ICartDataRes & { uuid?
 
   const goToCheckout = async () => {
     setLoading(true);
-    const paymentLink = await createPaymentLinkAction(cartData);
+    const paymentLink = await createPaymentLinkAction(cartData, location.href);
     const url = paymentLink?.url;
     console.log("🚀 ~ goToCheckout ~ url:", url)
     if(url){
@@ -161,7 +161,7 @@ export default function CartSlider({ uuid, ...cartData }: ICartDataRes & { uuid?
                       <button
                         onClick={goToCheckout}
                         disabled={loading}
-                        className="w-full flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                        className={clsx("w-full flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700", { "opacity-50 cursor-progress": loading })}
                       >
                         Checkout
                       </button>

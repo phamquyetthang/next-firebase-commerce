@@ -17,7 +17,7 @@ import { getProductByIds } from "../products/model";
 const cartsRef = collection(db, COLLECTIONS.CART);
 
 export const getMyCart = async (uuid: string) => {
-  const existedCart = await getDocs(query(cartsRef, where("uuid", "==", uuid)));
+  const existedCart = await getDocs(query(cartsRef, where("uuid", "==", uuid), where("completed", "!=", true)));
 
   if (!existedCart.docs[0]) {
     return undefined;
@@ -69,7 +69,7 @@ export const addToMyCart = async (
   }
 ) => {
   const existedCarts = await getDocs(
-    query(cartsRef, where("uuid", "==", uuid))
+    query(cartsRef, where("uuid", "==", uuid), where("completed", "!=", true))
   );
   let existedCart = existedCarts.docs[0];
 
@@ -94,6 +94,7 @@ export const addToMyCart = async (
 
   await updateDoc(doc(cartsRef, id), {
     ...data,
+    completed: false,
     products: [...data.products, {...product, itemId: new Date().getTime()}],
     updated_at: Timestamp.now(),
   });
@@ -107,7 +108,7 @@ export const removeItemFromMyCart = async (
   uuid: string,
   itemId: number
 ) => {
-  const existedCarts = await getDocs(query(cartsRef, where("uuid", "==", uuid)));
+  const existedCarts = await getDocs(query(cartsRef, where("uuid", "==", uuid), where("completed", "!=", true)));
   let existedCart = existedCarts.docs[0];
 
   if (!existedCart) {
@@ -127,4 +128,13 @@ export const removeItemFromMyCart = async (
   const newCart = await getDoc(doc(cartsRef, id));
 
   return { id: newCart.id, ...(newCart.data() as ICartDoc) };
+};
+
+export const checkoutCompletedCart = async (cartId: string, payment_intent?: string, payment_link?: string) => {
+    return await updateDoc(doc(cartsRef, cartId), {
+        completed: true,
+        payment_intent,
+        payment_link,
+        updated_at: Timestamp.now(),
+    });
 };
